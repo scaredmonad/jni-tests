@@ -1,11 +1,11 @@
-use crate::env::CoreFeatures;
+use crate::env::{Env, CoreFeatures, Signature};
+use jni::objects::JValue;
 
 mod env;
 
 fn main() {
-    use env::Env;
-    let mut main = Env::default();
-    main.attach();
-    // main.invoke_static();
-    println!("Hello, world!");
+    Env::invoke_static(
+        Signature("java/lang/Math", "abs", "(I)I"),
+        &[JValue::from(10)]
+    );
 }
