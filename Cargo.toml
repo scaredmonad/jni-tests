@@ -3,5 +3,11 @@ name = "jni-tests"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
+[workspace]
+members = ["layer"]
+
+[workspace.dependencies]
 jni = { version = "0.21.1", features = ["invocation"] }
+
+[dependencies]
+layer = { path = "./layer" }

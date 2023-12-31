@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use jni::objects::JValue;
 use jni::sys::jvalue;
 use jni::{AttachGuard, InitArgsBuilder, JNIVersion, JavaVM};
@@ -67,8 +68,9 @@ impl CoreFeatures for Env {
 mod test {
     #[test]
     pub fn ensure_invoke_static() {
-        use crate::env::{CoreFeatures, Env, Signature};
-        use jni::objects::JValue;
+        use super::*;
+        // use crate::env::{CoreFeatures, Env, Signature};
+        // use jni::objects::JValue;
 
         if let Some(out) = Env::invoke_static(
             Signature("java/lang/Math", "decrementExact", "(I)I"),
