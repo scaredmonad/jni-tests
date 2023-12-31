@@ -4,10 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["layer"]
+members = ["layer", "runtime"]
 
 [workspace.dependencies]
 jni = { version = "0.21.1", features = ["invocation"] }
+wasmtime = "16.0.0"
+anyhow = "1.0.78"
 
 [dependencies]
 layer = { path = "./layer" }
