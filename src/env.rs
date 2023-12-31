@@ -1,4 +1,5 @@
 use jni::objects::JValue;
+use jni::sys::jvalue;
 use jni::{AttachGuard, InitArgsBuilder, JNIVersion, JavaVM};
 use std::sync::{Arc, Once};
 
@@ -40,7 +41,7 @@ pub struct Env {
 // We can allow the host to define the stdlib classes/methods
 // that can get loaded as regular libraries.
 pub trait CoreFeatures {
-    fn invoke_static(sig: Signature, args: &[JValue]) -> Option<JValue<'static, 'static>>;
+    fn invoke_static(sig: Signature, args: &[JValue]) -> Option<jvalue>;
 }
 
 impl Default for Env {
@@ -52,13 +53,31 @@ impl Default for Env {
 }
 
 impl CoreFeatures for Env {
-    fn invoke_static(sig: Signature, args: &[JValue]) -> Option<JValue<'static, 'static>> {
+    fn invoke_static(sig: Signature, args: &[JValue]) -> Option<jvalue> {
         let mut env: AttachGuard<'_> = attach_current_thread();
         let Signature(class, method, signature) = sig;
-        Some(
-            env.call_static_method(class, method, signature, args)
-                .unwrap()
-                .borrow()
-        )
+        let out = env
+            .call_static_method(class, method, signature, args)
+            .unwrap()
+            .as_jni();
+        Some(out)
+    }
+}
+
+mod test {
+    #[test]
+    pub fn ensure_invoke_static() {
+        use crate::env::{CoreFeatures, Env, Signature};
+        use jni::objects::JValue;
+
+        if let Some(out) = Env::invoke_static(
+            Signature("java/lang/Math", "decrementExact", "(I)I"),
+            &[JValue::from(10)],
+        ) {
+            unsafe {
+                dbg!(out.i);
+                assert_eq!(out.i, 9)
+            }
+        }
     }
 }
